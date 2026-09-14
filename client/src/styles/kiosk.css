@@ -1,0 +1,163 @@
+.kiosk-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.kiosk-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  color: #fff8e7;
+  margin-bottom: 16px;
+}
+
+.kiosk-top h1 {
+  margin: 4px 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: #ffd54f;
+}
+
+.kiosk-top p,
+.kiosk-back {
+  margin: 0;
+  opacity: 0.92;
+}
+
+.kiosk-back {
+  font-weight: 800;
+}
+
+.kiosk-name {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  color: #fff8e7;
+}
+
+.kiosk-name input {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  min-width: 220px;
+}
+
+.kiosk-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.kiosk-layout {
+  display: grid;
+  grid-template-columns: 1.5fr 0.9fr;
+  gap: 16px;
+}
+
+.kiosk-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.menu-tile {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  background: rgba(255, 248, 231, 0.94);
+  border-radius: 22px;
+  padding: 14px;
+  border: 2px solid transparent;
+  box-shadow: var(--bee-shadow);
+}
+
+.menu-swatch {
+  align-self: stretch;
+  border-radius: 999px;
+}
+
+.menu-copy h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.menu-copy p {
+  margin: 4px 0 8px;
+  opacity: 0.75;
+}
+
+.menu-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+}
+
+.kiosk-cart {
+  padding: 18px;
+  position: sticky;
+  top: 16px;
+  align-self: start;
+}
+
+.kiosk-cart h2 {
+  margin: 0 0 10px;
+}
+
+.kiosk-cart ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.kiosk-cart li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(120, 20, 10, 0.2);
+}
+
+.kiosk-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 14px 0;
+  font-size: 1.15rem;
+}
+
+.muted {
+  opacity: 0.65;
+}
+
+.err {
+  color: #b71c1c;
+  font-weight: 700;
+}
+
+.placed {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 16px;
+  background: #fff3e0;
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.placed strong {
+  font-size: 2rem;
+  color: var(--bee-red-deep);
+}
+
+@media (max-width: 900px) {
+  .kiosk-layout,
+  .kiosk-menu,
+  .kiosk-top {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+}

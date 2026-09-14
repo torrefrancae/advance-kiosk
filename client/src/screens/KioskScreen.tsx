@@ -1,0 +1,146 @@
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { createOrder, fetchMenu, pesos, type MenuItem, type Order } from '@src/lib/api';
+import '@src/styles/kiosk.css';
+
+type Cart = Record<string, number>;
+
+export default function KioskScreen() {
+  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [cart, setCart] = useState<Cart>({});
+  const [name, setName] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [placed, setPlaced] = useState<Order | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [category, setCategory] = useState('All');
+
+  useEffect(() => {
+    void fetchMenu()
+      .then(setMenu)
+      .catch((err) => setError(err instanceof Error ? err.message : 'Menu failed'));
+  }, []);
+
+  const categories = useMemo(() => ['All', ...Array.from(new Set(menu.map((m) => m.category)))], [menu]);
+  const visible = menu.filter((m) => category === 'All' || m.category === category);
+  const lines = menu
+    .filter((m) => (cart[m.id] || 0) > 0)
+    .map((m) => ({ item: m, qty: cart[m.id] }));
+  const total = lines.reduce((sum, row) => sum + row.item.price_cents * row.qty, 0);
+
+  const bump = (id: string, delta: number) => {
+    setCart((prev) => {
+      const next = { ...prev };
+      const qty = (next[id] || 0) + delta;
+      if (qty <= 0) delete next[id];
+      else next[id] = qty;
+      return next;
+    });
+  };
+
+  const place = async () => {
+    if (!lines.length || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const order = await createOrder({
+        customer_name: name.trim() || 'Guest',
+        items: lines.map((row) => ({ id: row.item.id, qty: row.qty })),
+      });
+      setPlaced(order);
+      setCart({});
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not place order');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="app-shell kiosk-shell">
+      <header className="kiosk-top rise">
+        <div>
+          <Link to=".." className="kiosk-back">
+            All screens
+          </Link>
+          <h1 className="brand-mark">BeeJoy Kiosk</h1>
+          <p>Tap to order. Your ticket shows up on POS and the status board.</p>
+        </div>
+        <label className="kiosk-name">
+          Name on order
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Guest" />
+        </label>
+      </header>
+
+      <div className="kiosk-cats rise">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            className={`btn ${category === cat ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setCategory(cat)}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <div className="kiosk-layout">
+        <section className="kiosk-menu">
+          {visible.map((item, index) => (
+            <article
+              key={item.id}
+              className="menu-tile rise"
+              style={{ animationDelay: `${index * 0.04}s`, borderColor: item.color }}
+            >
+              <div className="menu-swatch" style={{ background: item.color }} />
+              <div className="menu-copy">
+                <h2>{item.name}</h2>
+                <p>{item.tag}</p>
+                <strong>{pesos(item.price_cents)}</strong>
+              </div>
+              <div className="menu-actions">
+                <button type="button" className="btn btn-ghost" onClick={() => bump(item.id, -1)}>
+                  -
+                </button>
+                <span>{cart[item.id] || 0}</span>
+                <button type="button" className="btn btn-primary" onClick={() => bump(item.id, 1)}>
+                  +
+                </button>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        <aside className="screen-card kiosk-cart rise">
+          <h2 className="brand-mark">Your tray</h2>
+          {lines.length === 0 ? <p className="muted">Add something delicious.</p> : null}
+          <ul>
+            {lines.map((row) => (
+              <li key={row.item.id}>
+                <span>
+                  {row.qty} x {row.item.name}
+                </span>
+                <strong>{pesos(row.item.price_cents * row.qty)}</strong>
+              </li>
+            ))}
+          </ul>
+          <div className="kiosk-total">
+            <span>Total</span>
+            <strong>{pesos(total)}</strong>
+          </div>
+          {error ? <p className="err">{error}</p> : null}
+          <button type="button" className="btn btn-danger" disabled={!lines.length || busy} onClick={() => void place()}>
+            {busy ? 'Sending...' : 'Place order'}
+          </button>
+          {placed ? (
+            <div className="placed pulse">
+              <p>Order placed</p>
+              <strong className="brand-mark">{placed.code}</strong>
+              <span>Watch it move on POS and Status.</span>
+            </div>
+          ) : null}
+        </aside>
+      </div>
+    </div>
+  );
+}
