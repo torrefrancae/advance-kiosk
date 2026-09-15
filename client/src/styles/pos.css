@@ -1,0 +1,86 @@
+.pos-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pos-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  color: #fff8e7;
+  margin-bottom: 18px;
+}
+
+.pos-top h1 {
+  margin: 4px 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: #ffd54f;
+}
+
+.pos-top p {
+  margin: 0;
+}
+
+.pos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.pos-empty,
+.pos-ticket {
+  padding: 18px;
+}
+
+.pos-ticket-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.pos-ticket-head strong {
+  font-size: 2rem;
+  color: var(--bee-red-deep);
+}
+
+.pos-name {
+  margin: 8px 0 12px;
+  font-weight: 800;
+}
+
+.pos-ticket ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.pos-total {
+  margin: 12px 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.pos-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-queued {
+  background: linear-gradient(180deg, #fff8e7, #ffe082);
+}
+
+.status-preparing {
+  background: linear-gradient(180deg, #fff3e0, #ffab91);
+}
+
+.status-ready {
+  background: linear-gradient(180deg, #e8f5e9, #a5d6a7);
+}
+
+@media (max-width: 900px) {
+  .pos-grid {
+    grid-template-columns: 1fr;
+  }
+}
