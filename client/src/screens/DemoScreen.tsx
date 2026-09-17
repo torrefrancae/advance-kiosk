@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { createOrder, pesos, updateOrderStatus, type Order } from '@src/lib/api';
+import { pesos, updateOrderStatus, type Order } from '@src/lib/api';
 import '@src/styles/demo.css';
 
 const BASE = '/sample/advance-kiosk';
@@ -13,7 +13,7 @@ const FRAMES = [
 ] as const;
 
 const STEPS = [
-  'Customer order lands on cashier as awaiting payment',
+  'Customer taps items on the kiosk and places the order',
   'Cashier takes payment - ticket moves to cook queue',
   'Cook starts cooking',
   'Cook marks ready - status board updates',
@@ -24,6 +24,36 @@ function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
+function requestKioskOrder(frame: HTMLIFrameElement | null) {
+  return new Promise<Order>((resolve, reject) => {
+    const target = frame?.contentWindow;
+    if (!target) {
+      reject(new Error('Kiosk panel is not ready yet'));
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      window.removeEventListener('message', onMessage);
+      reject(new Error('Kiosk demo timed out'));
+    }, 20000);
+
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== 'beejoy-demo-order') return;
+      window.clearTimeout(timeout);
+      window.removeEventListener('message', onMessage);
+      if (typeof event.data.error === 'string') {
+        reject(new Error(event.data.error));
+        return;
+      }
+      resolve(event.data.order as Order);
+    };
+
+    window.addEventListener('message', onMessage);
+    target.postMessage({ type: 'beejoy-demo-place' }, window.location.origin);
+  });
+}
+
 export default function DemoScreen() {
   const [running, setRunning] = useState(false);
   const [step, setStep] = useState(-1);
@@ -31,6 +61,7 @@ export default function DemoScreen() {
   const [message, setMessage] = useState('Press Start demo to run the full flow across all four screens.');
   const [error, setError] = useState<string | null>(null);
   const stopRef = useRef(false);
+  const kioskRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -45,22 +76,14 @@ export default function DemoScreen() {
     setError(null);
     setOrder(null);
     setStep(0);
-    setMessage('Placing a demo order from the kiosk...');
+    setMessage(STEPS[0]);
 
     try {
-      const created = await createOrder({
-        customer_name: 'Demo Guest',
-        items: [
-          { id: 'chicken-joy-meal', qty: 1 },
-          { id: 'peach-mango-pie', qty: 1 },
-          { id: 'float', qty: 1 },
-        ],
-        source: 'demo',
-      });
+      const created = await requestKioskOrder(kioskRef.current);
       if (stopRef.current) return;
       setOrder(created);
       setMessage(`${STEPS[0]} - ${created.code} (${pesos(created.total_cents)})`);
-      await wait(2200);
+      await wait(1800);
 
       setStep(1);
       setMessage(STEPS[1]);
@@ -122,7 +145,12 @@ export default function DemoScreen() {
                 <span>{frame.title}</span>
                 {active ? <span className="demo-live-pill">Active</span> : null}
               </header>
-              <iframe title={frame.title} src={frame.href} loading="eager" />
+              <iframe
+                ref={frame.key === 'kiosk' ? kioskRef : undefined}
+                title={frame.title}
+                src={frame.href}
+                loading="eager"
+              />
             </section>
           );
         })}

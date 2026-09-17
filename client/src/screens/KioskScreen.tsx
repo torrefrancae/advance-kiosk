@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDemoKioskDrive } from '@src/hooks/useDemoKioskDrive';
 import { useEmbedMode } from '@src/hooks/useEmbedMode';
 import { createOrder, fetchMenu, pesos, type MenuItem, type Order } from '@src/lib/api';
 import '@src/styles/kiosk.css';
@@ -15,6 +16,15 @@ export default function KioskScreen() {
   const [placed, setPlaced] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [category, setCategory] = useState('All');
+
+  useDemoKioskDrive({
+    enabled: embed,
+    setName,
+    setCart,
+    setBusy,
+    setPlaced,
+    setError,
+  });
 
   useEffect(() => {
     void fetchMenu()
