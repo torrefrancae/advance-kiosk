@@ -115,12 +115,16 @@ export default function KioskScreen() {
                 key={cat.name}
                 type="button"
                 className={`kiosk-rail-btn${active ? ' is-active' : ''}`}
-                style={{ borderColor: active ? cat.color : undefined }}
+                style={{ ['--cat-color' as string]: cat.color }}
+                aria-current={active ? 'true' : undefined}
                 onClick={() => setCategory(cat.name)}
               >
-                <img src={cat.thumb} alt="" />
+                <span className="kiosk-rail-glow" aria-hidden />
+                <span className="kiosk-rail-thumb">
+                  <img src={cat.thumb} alt="" />
+                </span>
                 <span className="kiosk-rail-label">{cat.name}</span>
-                <span className="kiosk-rail-count">{cat.count}</span>
+                {active ? <span className="kiosk-rail-live">Selected</span> : <span className="kiosk-rail-count">{cat.count}</span>}
               </button>
             );
           })}

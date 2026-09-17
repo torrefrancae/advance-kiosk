@@ -53,57 +53,177 @@
 .kiosk-rail {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   max-height: calc(100vh - 150px);
   overflow-y: auto;
-  padding: 4px 4px 12px 0;
+  padding: 6px 8px 16px 0;
   scrollbar-width: thin;
 }
 
 .kiosk-rail-btn {
+  position: relative;
   display: grid;
   justify-items: center;
   gap: 6px;
   width: 100%;
   margin: 0;
-  padding: 10px 8px;
-  border: 2px solid transparent;
-  border-radius: 18px;
-  background: rgba(255, 248, 231, 0.88);
-  color: var(--bee-ink);
+  padding: 12px 8px 10px;
+  border: 2px solid rgba(255, 248, 231, 0.18);
+  border-radius: 20px;
+  background: rgba(40, 12, 8, 0.45);
+  color: rgba(255, 248, 231, 0.72);
   cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  overflow: hidden;
+  isolation: isolate;
+  opacity: 0.62;
+  filter: grayscale(0.35) saturate(0.75);
+  transform: scale(0.96);
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease,
+    filter 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.kiosk-rail-glow {
+  display: none;
+}
+
+.kiosk-rail-thumb {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  padding: 2px;
+  background: rgba(255, 248, 231, 0.2);
 }
 
 .kiosk-rail-btn img {
-  width: 56px;
-  height: 56px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   border-radius: 14px;
+  display: block;
 }
 
 .kiosk-rail-label {
   font-family: 'Fredoka', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   line-height: 1.15;
   text-align: center;
 }
 
 .kiosk-rail-count {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 800;
-  opacity: 0.7;
+  opacity: 0.65;
+}
+
+.kiosk-rail-live {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #1b5e20;
+  color: #e8f5e9;
 }
 
 .kiosk-rail-btn:hover {
-  transform: translateY(-1px);
-  background: #fff8e7;
+  opacity: 0.88;
+  filter: grayscale(0.1);
+  transform: scale(0.99);
+  background: rgba(80, 20, 12, 0.55);
 }
 
 .kiosk-rail-btn.is-active {
-  background: #fff8e7;
-  box-shadow: 0 0 0 2px rgba(255, 213, 79, 0.55), var(--bee-shadow);
+  opacity: 1;
+  filter: none;
+  transform: scale(1.04);
+  z-index: 2;
+  color: #2b120c;
+  border-color: #ffd54f;
+  background:
+    linear-gradient(165deg, #ffd54f 0%, #ffb300 48%, #fff8e7 100%);
+  box-shadow:
+    0 0 0 3px rgba(255, 213, 79, 0.35),
+    8px 0 0 0 var(--cat-color, #e23d28),
+    0 16px 32px rgba(0, 0, 0, 0.35);
+  animation: rail-pop 0.45s ease;
+}
+
+.kiosk-rail-btn.is-active .kiosk-rail-glow {
+  display: block;
+  position: absolute;
+  inset: -30% -20%;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.55), transparent 55%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.kiosk-rail-btn.is-active .kiosk-rail-thumb {
+  background: var(--cat-color, #e23d28);
+  box-shadow: 0 8px 18px rgba(80, 20, 10, 0.28);
+  transform: scale(1.06);
+}
+
+.kiosk-rail-btn.is-active .kiosk-rail-label {
+  color: #7a1a10;
+  font-size: 0.88rem;
+}
+
+.kiosk-rail-btn.is-active::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 18%;
+  bottom: 18%;
+  width: 8px;
+  border-radius: 0 10px 10px 0;
+  background: var(--cat-color, #e23d28);
+  box-shadow: 0 0 12px var(--cat-color, #e23d28);
+}
+
+.kiosk-rail-btn.is-active::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1b5e20;
+  box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.28);
+  animation: rail-pulse 1.4s ease infinite;
+}
+
+@keyframes rail-pop {
+  0% {
+    transform: scale(0.94);
+  }
+  60% {
+    transform: scale(1.07);
+  }
+  100% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes rail-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.7;
+  }
 }
 
 .kiosk-products {
