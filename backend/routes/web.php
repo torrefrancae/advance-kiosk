@@ -69,8 +69,16 @@ $register = function (string $base) use ($dist) {
         $full = $dist.DIRECTORY_SEPARATOR.'menu'.DIRECTORY_SEPARATOR.$safe;
         abort_unless(is_file($full), 404);
 
+        $mime = match (true) {
+            str_ends_with($safe, '.svg') => 'image/svg+xml',
+            str_ends_with($safe, '.png') => 'image/png',
+            str_ends_with($safe, '.jpg'), str_ends_with($safe, '.jpeg') => 'image/jpeg',
+            str_ends_with($safe, '.webp') => 'image/webp',
+            default => 'application/octet-stream',
+        };
+
         return response()->file($full, [
-            'Content-Type' => 'image/svg+xml',
+            'Content-Type' => $mime,
             'Cache-Control' => 'public, max-age=86400',
         ]);
     })->where('path', '.*');

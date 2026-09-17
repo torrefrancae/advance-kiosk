@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDemoKioskDrive } from '@src/hooks/useDemoKioskDrive';
 import { useEmbedMode } from '@src/hooks/useEmbedMode';
+import { categoryCopy } from '@src/lib/categoryCopy';
 import { createOrder, fetchMenu, pesos, type MenuItem, type Order } from '@src/lib/api';
 import '@src/styles/kiosk.css';
 
@@ -110,6 +111,7 @@ export default function KioskScreen() {
         <nav className="kiosk-rail rise" aria-label="Menu categories">
           {categories.map((cat) => {
             const active = category === cat.name;
+            const copy = categoryCopy(cat.name);
             return (
               <button
                 key={cat.name}
@@ -123,8 +125,11 @@ export default function KioskScreen() {
                 <span className="kiosk-rail-thumb">
                   <img src={cat.thumb} alt="" />
                 </span>
-                <span className="kiosk-rail-label">{cat.name}</span>
-                {active ? <span className="kiosk-rail-live">Selected</span> : <span className="kiosk-rail-count">{cat.count}</span>}
+                <span className="kiosk-rail-copy">
+                  <span className="kiosk-rail-label">{copy.title}</span>
+                  <span className="kiosk-rail-blurb">{copy.blurb}</span>
+                </span>
+                {active ? <span className="kiosk-rail-live">Selected</span> : <span className="kiosk-rail-count">{cat.count} items</span>}
               </button>
             );
           })}
@@ -132,7 +137,10 @@ export default function KioskScreen() {
 
         <section className="kiosk-products rise">
           <div className="kiosk-products-head">
-            <h2 className="brand-mark">{category || 'Menu'}</h2>
+            <div>
+              <p className="kiosk-products-kicker">{categoryCopy(category).blurb}</p>
+              <h2 className="brand-mark">{categoryCopy(category).title || 'Menu'}</h2>
+            </div>
             <p>{visible.length} items</p>
           </div>
           <div className="kiosk-menu">

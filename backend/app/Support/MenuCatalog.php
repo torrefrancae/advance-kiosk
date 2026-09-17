@@ -8,9 +8,18 @@ class MenuCatalog
     {
         static $items = null;
         if ($items === null) {
+            $photos = require __DIR__.'/menu_photos.php';
             $raw = require __DIR__.'/menu_items.php';
-            $items = array_map(static function (array $item): array {
-                $item['image'] = '/sample/advance-kiosk/menu/item/'.$item['id'].'.svg';
+            $items = array_map(static function (array $item) use ($photos): array {
+                $id = (string) $item['id'];
+                $local = public_path('kiosk-dist/menu/photos/'.$id.'.jpg');
+                if (is_file($local)) {
+                    $item['image'] = '/sample/advance-kiosk/menu/photos/'.$id.'.jpg';
+                } elseif (isset($photos[$id])) {
+                    $item['image'] = $photos[$id];
+                } else {
+                    $item['image'] = '/sample/advance-kiosk/menu/item/'.$id.'.svg';
+                }
 
                 return $item;
             }, $raw);
