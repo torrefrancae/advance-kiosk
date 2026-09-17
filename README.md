@@ -39,7 +39,7 @@ Health: http://127.0.0.1:3094/sample/advance-kiosk/api/health
 
 - `client/` Vite React TypeScript UI
 - `backend/` Laravel 11 + SQLite orders API + SSE/live poll
-- Build output lands in `backend/public/kiosk-dist/` and Laravel mounts it at `/sample/advance-kiosk/`
+- Build output lands in `backend/public/kiosk-dist/` and Laravel serves it at `/sample/advance-kiosk/`
 
 ## Notes
 

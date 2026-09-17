@@ -33,6 +33,17 @@
   opacity: 0.95;
 }
 
+.home-hero-cta {
+  display: inline-flex;
+  margin-top: 18px;
+  text-decoration: none;
+}
+
+.home-card-primary {
+  outline: 3px solid rgba(183, 28, 28, 0.35);
+  transform: scale(1.01);
+}
+
 .home-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
