@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
             'sample/advance-kiosk/api/*',
+            'api/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
