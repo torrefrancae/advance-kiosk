@@ -27,8 +27,8 @@ return [
     'chicken-joy-meal' => $u('photo-1562967914-608f82629710'),
     'chicken-joy-spicy-meal' => $u('photo-1626645738196-c2a7c87a8f58'),
     'chicken-joy-2pc' => $u('photo-1587593810167-a84920ea0781'),
-    'chicken-joy-bucket-6' => \$u('photo-1626082927389-6cd097cdc6ec'),
-    'chicken-joy-bucket-8' => \$u('photo-1626645738196-c2a7c87a8f58'),
+    'chicken-joy-bucket-6' => $u('photo-1626082927389-6cd097cdc6ec'),
+    'chicken-joy-bucket-8' => $u('photo-1626645738196-c2a7c87a8f58'),
     'chicken-nuggets-6' => $u('photo-1565299624946-b28f40a0ae38'),
     'chicken-nuggets-10' => $u('photo-1603133872878-684f208fb84b'),
 
@@ -36,9 +36,9 @@ return [
     'yumburger' => $u('photo-1568901346375-23c9450c58cd'),
     'yumburger-cheese' => $u('photo-1572802419224-296b0aeee0d9'),
     'yumburger-double' => $u('photo-1553979459-d2229ba7433b'),
-    'yumburger-meal' => \$u('photo-1568901346375-23c9450c58cd'),
-    'champ-burger' => \$u('photo-1553979459-d2229ba7433b'),
-    'champ-burger-meal' => \$u('photo-1550547660-d9450f859349'),
+    'yumburger-meal' => $u('photo-1568901346375-23c9450c58cd'),
+    'champ-burger' => $u('photo-1553979459-d2229ba7433b'),
+    'champ-burger-meal' => $u('photo-1550547660-d9450f859349'),
 
     /* Burger steak */
     'burger-steak' => $u('photo-1544025162-d76694265947'),
