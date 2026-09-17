@@ -4,8 +4,9 @@ import type { Order, OrderStatus } from '@src/lib/api';
 import '@src/styles/status.css';
 
 const COLUMNS: { key: OrderStatus; title: string; hint: string }[] = [
-  { key: 'queued', title: 'In Queue', hint: 'Just ordered' },
-  { key: 'preparing', title: 'Preparing', hint: 'Kitchen working' },
+  { key: 'queued', title: 'Pay Counter', hint: 'Awaiting payment' },
+  { key: 'paid', title: 'In Kitchen', hint: 'Paid, waiting cook' },
+  { key: 'preparing', title: 'Cooking', hint: 'Cooking started' },
   { key: 'ready', title: 'Ready', hint: 'Please pick up' },
 ];
 
@@ -19,7 +20,7 @@ function Column({ title, hint, orders }: { title: string; hint: string; orders: 
       <div className="status-list">
         {orders.length === 0 ? <p className="muted">None right now</p> : null}
         {orders.map((order) => (
-          <article key={order.id} className={`status-chip ${order.status === 'ready' ? 'pulse' : ''}`}>
+          <article key={order.id} className={`status-chip ${order.status === 'ready' || order.status === 'preparing' ? 'pulse' : ''}`}>
             <strong className="brand-mark">{order.code}</strong>
             <span>{order.customer_name}</span>
           </article>
@@ -40,11 +41,11 @@ export default function StatusScreen() {
             All screens
           </Link>
           <h1 className="brand-mark">Now Serving</h1>
-          <p>Lobby board updates as POS moves each ticket.</p>
+          <p>Lobby board updates as cashier and cook move each ticket.</p>
         </div>
         <span className={`pill ${connected ? 'live' : 'idle'}`}>{connected ? 'Live' : 'Syncing'}</span>
       </header>
-      <div className="status-board">
+      <div className="status-board status-board-4">
         {COLUMNS.map((col) => (
           <Column
             key={col.key}

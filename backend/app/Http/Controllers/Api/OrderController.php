@@ -12,14 +12,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
 {
-    private const STATUSES = ['queued', 'preparing', 'ready', 'completed'];
+    private const ACTIVE = ['queued', 'paid', 'preparing', 'ready'];
 
     public function index(Request $request): JsonResponse
     {
         $query = Order::query()->orderByDesc('id');
 
         if ($request->boolean('active', true)) {
-            $query->whereIn('status', ['queued', 'preparing', 'ready']);
+            $query->whereIn('status', self::ACTIVE);
         }
 
         if ($status = $request->string('status')->toString()) {
@@ -81,20 +81,40 @@ class OrderController extends Controller
     public function update(Request $request, Order $order): JsonResponse
     {
         $data = $request->validate([
-            'status' => ['required', 'string', 'in:queued,preparing,ready,completed'],
+            'status' => ['required', 'string', 'in:queued,paid,preparing,ready,completed'],
         ]);
 
         $next = $data['status'];
         $order->status = $next;
+
+        if ($next === 'paid' && !$order->paid_at) {
+            $order->paid_at = now();
+        }
+        if ($next === 'preparing' && !$order->preparing_at) {
+            $order->preparing_at = now();
+            if (!$order->paid_at) {
+                $order->paid_at = now();
+            }
+        }
         if ($next === 'ready' && !$order->ready_at) {
             $order->ready_at = now();
+            if (!$order->preparing_at) {
+                $order->preparing_at = now();
+            }
+            if (!$order->paid_at) {
+                $order->paid_at = now();
+            }
         }
         if ($next === 'completed') {
             $order->completed_at = now();
             if (!$order->ready_at) {
                 $order->ready_at = now();
             }
+            if (!$order->paid_at) {
+                $order->paid_at = now();
+            }
         }
+
         $order->save();
 
         return response()->json([
@@ -112,7 +132,7 @@ class OrderController extends Controller
                 $payload = [
                     'ok' => true,
                     'orders' => Order::query()
-                        ->whereIn('status', ['queued', 'preparing', 'ready'])
+                        ->whereIn('status', self::ACTIVE)
                         ->orderBy('id')
                         ->limit(80)
                         ->get()
@@ -155,6 +175,8 @@ class OrderController extends Controller
             'total_cents' => $order->total_cents,
             'source' => $order->source,
             'created_at' => optional($order->created_at)?->toIso8601String(),
+            'paid_at' => optional($order->paid_at)?->toIso8601String(),
+            'preparing_at' => optional($order->preparing_at)?->toIso8601String(),
             'ready_at' => optional($order->ready_at)?->toIso8601String(),
             'completed_at' => optional($order->completed_at)?->toIso8601String(),
         ];

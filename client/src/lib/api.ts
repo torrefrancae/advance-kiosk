@@ -15,7 +15,7 @@ export type OrderLine = {
   line_cents: number;
 };
 
-export type OrderStatus = 'queued' | 'preparing' | 'ready' | 'completed';
+export type OrderStatus = 'queued' | 'paid' | 'preparing' | 'ready' | 'completed';
 
 export type Order = {
   id: number;
@@ -26,6 +26,8 @@ export type Order = {
   total_cents: number;
   source: string;
   created_at?: string | null;
+  paid_at?: string | null;
+  preparing_at?: string | null;
   ready_at?: string | null;
   completed_at?: string | null;
 };
@@ -34,6 +36,23 @@ export const API_BASE = '/sample/advance-kiosk/api';
 
 export function pesos(cents: number): string {
   return `PHP ${(cents / 100).toFixed(2)}`;
+}
+
+export function statusLabel(status: OrderStatus): string {
+  switch (status) {
+    case 'queued':
+      return 'Awaiting payment';
+    case 'paid':
+      return 'Paid - waiting cook';
+    case 'preparing':
+      return 'Cooking started';
+    case 'ready':
+      return 'Ready for pickup';
+    case 'completed':
+      return 'Completed';
+    default:
+      return status;
+  }
 }
 
 async function parseJson<T>(res: Response): Promise<T> {

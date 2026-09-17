@@ -5,19 +5,25 @@ const CARDS = [
   {
     to: 'kiosk',
     title: 'Self-Service Kiosk',
-    copy: 'Tap meals, build a cart, and place an order like a QSR lobby kiosk.',
+    copy: 'Guest taps meals, builds a tray, and places an order.',
     tone: 'kiosk',
   },
   {
-    to: 'pos',
-    title: 'Realtime POS',
-    copy: 'Watch kiosk tickets land live, advance kitchen status, and checkout by order id.',
-    tone: 'pos',
+    to: 'cashier',
+    title: 'Cashier',
+    copy: 'Take payment for unpaid tickets, then hand ready orders to guests.',
+    tone: 'cashier',
+  },
+  {
+    to: 'cook',
+    title: 'Cook Station',
+    copy: 'See paid tickets, start cooking, and mark each order ready.',
+    tone: 'cook',
   },
   {
     to: 'status',
     title: 'Order Status Board',
-    copy: 'Lobby board from queue to preparing to ready for pickup.',
+    copy: 'Lobby board from pay queue to cooking to ready for pickup.',
     tone: 'status',
   },
 ] as const;
@@ -29,7 +35,7 @@ export default function HomeScreen() {
         <p className="home-kicker">Advance kiosk demo</p>
         <h1 className="brand-mark home-title">BeeJoy</h1>
         <p className="home-sub">
-          Three linked screens for a self-service counter: guest kiosk, staff POS, and pickup board.
+          Four linked screens: guest kiosk, cashier payment, cook station, and pickup board.
         </p>
       </header>
       <div className="home-grid">

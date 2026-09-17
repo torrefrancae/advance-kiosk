@@ -63,7 +63,7 @@ export default function KioskScreen() {
             All screens
           </Link>
           <h1 className="brand-mark">BeeJoy Kiosk</h1>
-          <p>Tap to order. Your ticket shows up on POS and the status board.</p>
+          <p>Tap to order. Pay at Cashier, then watch Cook and the status board.</p>
         </div>
         <label className="kiosk-name">
           Name on order
@@ -136,7 +136,7 @@ export default function KioskScreen() {
             <div className="placed pulse">
               <p>Order placed</p>
               <strong className="brand-mark">{placed.code}</strong>
-              <span>Watch it move on POS and Status.</span>
+              <span>Watch it on Cashier, Cook, and Status.</span>
             </div>
           ) : null}
         </aside>

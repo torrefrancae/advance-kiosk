@@ -13,6 +13,8 @@ class Order extends Model
         'items',
         'total_cents',
         'source',
+        'paid_at',
+        'preparing_at',
         'ready_at',
         'completed_at',
     ];
@@ -21,6 +23,8 @@ class Order extends Model
     {
         return [
             'items' => 'array',
+            'paid_at' => 'datetime',
+            'preparing_at' => 'datetime',
             'ready_at' => 'datetime',
             'completed_at' => 'datetime',
         ];

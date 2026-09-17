@@ -1,9 +1,9 @@
-.pos-shell {
+.staff-shell {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.pos-top {
+.staff-top {
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -12,63 +12,72 @@
   margin-bottom: 18px;
 }
 
-.pos-top h1 {
+.staff-top h1 {
   margin: 4px 0;
   font-size: clamp(2rem, 5vw, 3rem);
   color: #ffd54f;
 }
 
-.pos-top p {
+.staff-top p {
   margin: 0;
 }
 
-.pos-grid {
+.staff-columns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
 }
 
-.pos-empty,
-.pos-ticket {
+.staff-col h2 {
+  color: #fff8e7;
+  margin: 0 0 12px;
+  font-size: 1.45rem;
+}
+
+.staff-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.staff-empty,
+.staff-ticket {
   padding: 18px;
 }
 
-.pos-ticket-head {
+.staff-ticket-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
 }
 
-.pos-ticket-head strong {
+.staff-ticket-head strong {
   font-size: 2rem;
   color: var(--bee-red-deep);
 }
 
-.pos-name {
+.staff-name {
   margin: 8px 0 12px;
   font-weight: 800;
 }
 
-.pos-ticket ul {
+.staff-ticket ul {
   margin: 0;
   padding-left: 18px;
 }
 
-.pos-total {
+.staff-total {
   margin: 12px 0;
   font-size: 1.2rem;
   font-weight: 800;
 }
 
-.pos-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 .status-queued {
   background: linear-gradient(180deg, #fff8e7, #ffe082);
+}
+
+.status-paid {
+  background: linear-gradient(180deg, #e3f2fd, #90caf9);
 }
 
 .status-preparing {
@@ -80,7 +89,7 @@
 }
 
 @media (max-width: 900px) {
-  .pos-grid {
+  .staff-columns {
     grid-template-columns: 1fr;
   }
 }
