@@ -1,5 +1,5 @@
 .kiosk-shell {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
@@ -9,12 +9,12 @@
   gap: 16px;
   align-items: end;
   color: #fff8e7;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .kiosk-top h1 {
   margin: 4px 0;
-  font-size: clamp(2rem, 5vw, 3rem);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
   color: #ffd54f;
 }
 
@@ -39,37 +39,116 @@
   border: 0;
   border-radius: 14px;
   padding: 12px 14px;
-  min-width: 220px;
+  min-width: 200px;
 }
 
-.kiosk-cats {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 8px;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  overflow-y: visible;
-  padding-bottom: 6px;
-}
-
-.kiosk-cats .btn {
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
-
-.kiosk-layout {
+.kiosk-board {
   display: grid;
-  grid-template-columns: 1.5fr 0.9fr;
-  gap: 16px;
+  grid-template-columns: 150px minmax(0, 1fr) 290px;
+  gap: 12px;
+  align-items: start;
+  min-height: calc(100vh - 150px);
+}
+
+.kiosk-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding: 4px 4px 12px 0;
+  scrollbar-width: thin;
+}
+
+.kiosk-rail-btn {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 10px 8px;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  background: rgba(255, 248, 231, 0.88);
+  color: var(--bee-ink);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.kiosk-rail-btn img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.kiosk-rail-label {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.kiosk-rail-count {
+  font-size: 0.7rem;
+  font-weight: 800;
+  opacity: 0.7;
+}
+
+.kiosk-rail-btn:hover {
+  transform: translateY(-1px);
+  background: #fff8e7;
+}
+
+.kiosk-rail-btn.is-active {
+  background: #fff8e7;
+  box-shadow: 0 0 0 2px rgba(255, 213, 79, 0.55), var(--bee-shadow);
+}
+
+.kiosk-products {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  max-height: calc(100vh - 150px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.kiosk-products-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 12px;
+  color: #fff8e7;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 4px 2px 8px;
+  background: linear-gradient(180deg, rgba(80, 15, 10, 0.92), rgba(80, 15, 10, 0.55) 70%, transparent);
+}
+
+.kiosk-products-head h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: #ffd54f;
+}
+
+.kiosk-products-head p {
+  margin: 0;
+  font-weight: 700;
+  opacity: 0.85;
 }
 
 .kiosk-menu {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+  padding-bottom: 12px;
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1180px) {
   .kiosk-menu {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -100,15 +179,16 @@
   min-width: 0;
 }
 
-.menu-copy h2 {
+.menu-copy h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   line-height: 1.2;
 }
 
 .menu-copy p {
   margin: 4px 0 8px;
   opacity: 0.75;
+  font-size: 0.9rem;
 }
 
 .menu-actions {
@@ -125,10 +205,18 @@
   position: sticky;
   top: 16px;
   align-self: start;
+  max-height: calc(100vh - 150px);
+  overflow: auto;
 }
 
 .kiosk-cart h2 {
+  margin: 0 0 4px;
+}
+
+.kiosk-cart-meta {
   margin: 0 0 10px;
+  font-weight: 800;
+  opacity: 0.7;
 }
 
 .kiosk-cart ul {
@@ -191,12 +279,57 @@
   font-weight: 700;
 }
 
-@media (max-width: 900px) {
-  .kiosk-layout,
-  .kiosk-menu,
-  .kiosk-top {
+.app-shell.is-embed .kiosk-board {
+  grid-template-columns: 112px minmax(0, 1fr) 220px;
+  min-height: calc(100vh - 88px);
+}
+
+.app-shell.is-embed .kiosk-rail,
+.app-shell.is-embed .kiosk-products,
+.app-shell.is-embed .kiosk-cart {
+  max-height: calc(100vh - 88px);
+}
+
+.app-shell.is-embed .kiosk-rail-btn img {
+  width: 44px;
+  height: 44px;
+}
+
+@media (max-width: 980px) {
+  .kiosk-board {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+
+  .kiosk-cart {
+    grid-column: 1 / -1;
+    position: static;
+    max-height: none;
+  }
+
+  .kiosk-menu {
     grid-template-columns: 1fr;
-    display: grid;
+  }
+}
+
+@media (max-width: 640px) {
+  .kiosk-board {
+    grid-template-columns: 1fr;
+  }
+
+  .kiosk-rail {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+  }
+
+  .kiosk-rail-btn {
+    min-width: 96px;
+  }
+
+  .kiosk-products {
+    max-height: none;
   }
 
   .menu-photo {

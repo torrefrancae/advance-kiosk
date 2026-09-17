@@ -15,7 +15,7 @@ export default function KioskScreen() {
   const [busy, setBusy] = useState(false);
   const [placed, setPlaced] = useState<Order | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [category, setCategory] = useState('All');
+  const [category, setCategory] = useState('');
 
   useDemoKioskDrive({
     enabled: true,
@@ -28,16 +28,36 @@ export default function KioskScreen() {
 
   useEffect(() => {
     void fetchMenu()
-      .then(setMenu)
+      .then((items) => {
+        setMenu(items);
+        setCategory((prev) => prev || items[0]?.category || '');
+      })
       .catch((err) => setError(err instanceof Error ? err.message : 'Menu failed'));
   }, []);
 
-  const categories = useMemo(() => ['All', ...Array.from(new Set(menu.map((m) => m.category)))], [menu]);
-  const visible = menu.filter((m) => category === 'All' || m.category === category);
+  const categories = useMemo(() => {
+    const seen = new Set<string>();
+    const list: { name: string; thumb: string; color: string; count: number }[] = [];
+    menu.forEach((item) => {
+      if (!seen.has(item.category)) {
+        seen.add(item.category);
+        list.push({
+          name: item.category,
+          thumb: item.image || '',
+          color: item.color,
+          count: menu.filter((row) => row.category === item.category).length,
+        });
+      }
+    });
+    return list;
+  }, [menu]);
+
+  const visible = menu.filter((m) => m.category === category);
   const lines = menu
     .filter((m) => (cart[m.id] || 0) > 0)
     .map((m) => ({ item: m, qty: cart[m.id] }));
   const total = lines.reduce((sum, row) => sum + Number(row.item.price_cents) * row.qty, 0);
+  const trayCount = lines.reduce((sum, row) => sum + row.qty, 0);
 
   const bump = (id: string, delta: number) => {
     setCart((prev) => {
@@ -78,7 +98,7 @@ export default function KioskScreen() {
             </Link>
           )}
           <h1 className="brand-mark">BeeJoy Kiosk</h1>
-          {embed ? null : <p>Tap to order. Pay at Cashier, then watch Cook and the status board.</p>}
+          {embed ? null : <p>Pick a category on the left, then add items to your tray.</p>}
         </div>
         <label className="kiosk-name">
           Name on order
@@ -86,48 +106,61 @@ export default function KioskScreen() {
         </label>
       </header>
 
-      <div className="kiosk-cats rise">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            className={`btn ${category === cat ? 'btn-primary' : 'btn-ghost'}`}
-            onClick={() => setCategory(cat)}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
+      <div className="kiosk-board">
+        <nav className="kiosk-rail rise" aria-label="Menu categories">
+          {categories.map((cat) => {
+            const active = category === cat.name;
+            return (
+              <button
+                key={cat.name}
+                type="button"
+                className={`kiosk-rail-btn${active ? ' is-active' : ''}`}
+                style={{ borderColor: active ? cat.color : undefined }}
+                onClick={() => setCategory(cat.name)}
+              >
+                <img src={cat.thumb} alt="" />
+                <span className="kiosk-rail-label">{cat.name}</span>
+                <span className="kiosk-rail-count">{cat.count}</span>
+              </button>
+            );
+          })}
+        </nav>
 
-      <div className="kiosk-layout">
-        <section className="kiosk-menu">
-          {visible.map((item, index) => (
-            <article
-              key={item.id}
-              className="menu-tile rise"
-              style={{ animationDelay: `${index * 0.04}s`, borderColor: item.color }}
-            >
-              <img className="menu-photo" src={item.image} alt={item.name} loading="lazy" />
-              <div className="menu-copy">
-                <h2>{item.name}</h2>
-                <p>{item.tag}</p>
-                <strong>{pesos(item.price_cents)}</strong>
-              </div>
-              <div className="menu-actions">
-                <button type="button" className="btn btn-ghost" onClick={() => bump(item.id, -1)}>
-                  -
-                </button>
-                <span>{cart[item.id] || 0}</span>
-                <button type="button" className="btn btn-primary" onClick={() => bump(item.id, 1)}>
-                  +
-                </button>
-              </div>
-            </article>
-          ))}
+        <section className="kiosk-products rise">
+          <div className="kiosk-products-head">
+            <h2 className="brand-mark">{category || 'Menu'}</h2>
+            <p>{visible.length} items</p>
+          </div>
+          <div className="kiosk-menu">
+            {visible.map((item, index) => (
+              <article
+                key={item.id}
+                className="menu-tile"
+                style={{ animationDelay: `${index * 0.03}s`, borderColor: item.color }}
+              >
+                <img className="menu-photo" src={item.image} alt={item.name} loading="lazy" />
+                <div className="menu-copy">
+                  <h3>{item.name}</h3>
+                  <p>{item.tag}</p>
+                  <strong>{pesos(item.price_cents)}</strong>
+                </div>
+                <div className="menu-actions">
+                  <button type="button" className="btn btn-ghost" onClick={() => bump(item.id, -1)}>
+                    -
+                  </button>
+                  <span>{cart[item.id] || 0}</span>
+                  <button type="button" className="btn btn-primary" onClick={() => bump(item.id, 1)}>
+                    +
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
         </section>
 
         <aside className="screen-card kiosk-cart rise">
           <h2 className="brand-mark">Your tray</h2>
+          <p className="kiosk-cart-meta">{trayCount} item{trayCount === 1 ? '' : 's'}</p>
           {lines.length === 0 && !placed ? <p className="muted">Add something delicious.</p> : null}
           <ul>
             {lines.map((row) => (
