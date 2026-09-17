@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <rect width="640" height="480" rx="48" fill="#3E2723"/>
+  <rect x="250" y="160" width="140" height="220" rx="24" fill="#6D4C41"/>
+  <rect x="260" y="180" width="120" height="180" rx="18" fill="#B71C1C"/>
+  <ellipse cx="320" cy="180" rx="60" ry="22" fill="#FFF8E7"/>
+  <circle cx="320" cy="165" r="34" fill="#FFFDE7"/>
+  <path d="M340 140c10-20 40-20 45 5" stroke="#FFF8E7" stroke-width="8" fill="none"/>
+  <rect x="300" y="120" width="14" height="40" rx="4" fill="#FF5252"/>
+  <text x="40" y="70" fill="#FFD54F" font-family="Arial Black,sans-serif" font-size="42">Cola Float</text>
+</svg>

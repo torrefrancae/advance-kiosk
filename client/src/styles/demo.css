@@ -1,0 +1,116 @@
+.demo-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.demo-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  color: #fff8e7;
+  margin-bottom: 18px;
+}
+
+.demo-top h1 {
+  margin: 4px 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: #ffd54f;
+}
+
+.demo-top p {
+  margin: 0;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+}
+
+.demo-steps,
+.demo-panel {
+  padding: 18px;
+}
+
+.demo-step {
+  padding: 14px;
+  border-radius: 18px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.45);
+  opacity: 0.65;
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+.demo-step.active {
+  opacity: 1;
+  transform: scale(1.02);
+  background: linear-gradient(180deg, #fff8e7, #ffd54f);
+  box-shadow: var(--bee-shadow);
+}
+
+.demo-step.done {
+  opacity: 0.9;
+  background: rgba(200, 230, 201, 0.75);
+}
+
+.demo-screen {
+  display: inline-block;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.demo-step h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.demo-step p {
+  margin: 6px 0 0;
+}
+
+.demo-code {
+  display: block;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 2.4rem;
+  color: var(--bee-red-deep);
+}
+
+.demo-status {
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.demo-log {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(120, 20, 10, 0.25);
+  display: grid;
+  gap: 6px;
+}
+
+.demo-log p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.demo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.demo-links a {
+  font-weight: 800;
+  color: var(--bee-red-deep);
+}
+
+@media (max-width: 900px) {
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}

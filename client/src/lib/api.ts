@@ -5,6 +5,7 @@ export type MenuItem = {
   price_cents: number;
   tag: string;
   color: string;
+  image?: string;
 };
 
 export type OrderLine = {
@@ -13,6 +14,7 @@ export type OrderLine = {
   qty: number;
   unit_cents: number;
   line_cents: number;
+  image?: string;
 };
 
 export type OrderStatus = 'queued' | 'paid' | 'preparing' | 'ready' | 'completed';
@@ -35,7 +37,9 @@ export type Order = {
 export const API_BASE = '/sample/advance-kiosk/api';
 
 export function pesos(cents: number): string {
-  return `PHP ${(cents / 100).toFixed(2)}`;
+  const n = Number(cents);
+  if (!Number.isFinite(n)) return 'PHP 0.00';
+  return `PHP ${(n / 100).toFixed(2)}`;
 }
 
 export function statusLabel(status: OrderStatus): string {
@@ -65,18 +69,25 @@ async function parseJson<T>(res: Response): Promise<T> {
 
 export async function fetchMenu(): Promise<MenuItem[]> {
   const data = await parseJson<{ items: MenuItem[] }>(await fetch(`${API_BASE}/menu`));
-  return data.items;
+  return data.items.map((item) => ({
+    ...item,
+    price_cents: Number(item.price_cents) || 0,
+  }));
 }
 
 export async function fetchOrders(active = true): Promise<Order[]> {
   const q = active ? '?active=1' : '?active=0';
   const data = await parseJson<{ orders: Order[] }>(await fetch(`${API_BASE}/orders${q}`));
-  return data.orders;
+  return data.orders.map((order) => ({
+    ...order,
+    total_cents: Number(order.total_cents) || 0,
+  }));
 }
 
 export async function createOrder(input: {
   customer_name: string;
   items: { id: string; qty: number }[];
+  source?: string;
 }): Promise<Order> {
   const data = await parseJson<{ order: Order }>(
     await fetch(`${API_BASE}/orders`, {
@@ -85,16 +96,27 @@ export async function createOrder(input: {
       body: JSON.stringify(input),
     })
   );
-  return data.order;
+  return { ...data.order, total_cents: Number(data.order.total_cents) || 0 };
 }
 
 export async function updateOrderStatus(id: number, status: OrderStatus): Promise<Order> {
+  return updateOrder(id, { status });
+}
+
+export async function updateOrder(
+  id: number,
+  patch: {
+    status?: OrderStatus;
+    customer_name?: string;
+    items?: { id: string; qty: number }[];
+  }
+): Promise<Order> {
   const data = await parseJson<{ order: Order }>(
     await fetch(`${API_BASE}/orders/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ status }),
+      body: JSON.stringify(patch),
     })
   );
-  return data.order;
+  return { ...data.order, total_cents: Number(data.order.total_cents) || 0 };
 }

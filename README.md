@@ -9,12 +9,13 @@ Laravel serves the API and mounts the built React static files under `/sample/ad
 | Path | Role |
 |---|---|
 | `/sample/advance-kiosk/` | Hub |
+| `/sample/advance-kiosk/demo` | Live walkthrough of the full flow |
 | `/sample/advance-kiosk/kiosk` | Guest self-service kiosk |
-| `/sample/advance-kiosk/cashier` | Cashier payment + handoff |
+| `/sample/advance-kiosk/cashier` | Cashier payment, edit, and handoff |
 | `/sample/advance-kiosk/cook` | Cook station (start cooking -> ready) |
 | `/sample/advance-kiosk/status` | Lobby board |
 
-Flow: kiosk places order (`queued`) -> cashier takes payment (`paid`) -> cook starts (`preparing`) -> cook marks ready (`ready`) -> cashier hands to guest (`completed`).
+Flow: kiosk places order (`queued`) -> cashier can edit then takes payment (`paid`) -> cook starts (`preparing`) -> cook marks ready (`ready`) -> cashier hands to guest (`completed`).
 
 ## Local
 

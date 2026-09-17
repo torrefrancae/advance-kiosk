@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <rect width="640" height="480" rx="48" fill="#BF360C"/>
+  <ellipse cx="320" cy="280" rx="150" ry="100" fill="#FFF3E0"/>
+  <ellipse cx="320" cy="280" rx="130" ry="80" fill="#FF7043"/>
+  <path d="M220 250c40 30 80-10 120 20s70-20 110 10" stroke="#FFCC80" stroke-width="10" fill="none"/>
+  <path d="M230 290c50 20 90-20 140 10s60 5 100-15" stroke="#FFE0B2" stroke-width="8" fill="none"/>
+  <circle cx="280" cy="260" r="10" fill="#E53935"/><circle cx="360" cy="300" r="9" fill="#C62828"/><circle cx="400" cy="250" r="8" fill="#E53935"/>
+  <text x="40" y="70" fill="#FFD54F" font-family="Arial Black,sans-serif" font-size="40">Sweet Pasta</text>
+</svg>

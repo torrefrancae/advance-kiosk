@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7A1A10"/><stop offset="1" stop-color="#E23D28"/></linearGradient></defs>
+  <rect width="640" height="480" rx="48" fill="url(#g)"/>
+  <ellipse cx="320" cy="390" rx="180" ry="28" fill="#000" opacity=".18"/>
+  <ellipse cx="300" cy="250" rx="130" ry="90" fill="#F4A460"/>
+  <ellipse cx="300" cy="250" rx="110" ry="72" fill="#E07A3D"/>
+  <path d="M210 220c40-70 120-90 170-40 20 22 18 70-10 95-40 35-110 40-150 8-28-22-32-42-10-63z" fill="#C45C26"/>
+  <circle cx="250" cy="230" r="10" fill="#FFD54F"/><circle cx="330" cy="210" r="8" fill="#FFD54F"/><circle cx="290" cy="270" r="7" fill="#FFD54F"/>
+  <path d="M390 180c40-10 70 20 55 55-20 45-70 55-95 25" fill="#8D2B1B"/>
+  <text x="40" y="70" fill="#FFD54F" font-family="Arial Black,sans-serif" font-size="42">Chicken Joy</text>
+</svg>

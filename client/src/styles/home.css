@@ -39,6 +39,17 @@
   text-decoration: none;
 }
 
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.home-hero-actions .home-hero-cta {
+  margin-top: 18px;
+}
+
 .home-card-primary {
   outline: 3px solid rgba(183, 28, 28, 0.35);
   transform: scale(1.01);

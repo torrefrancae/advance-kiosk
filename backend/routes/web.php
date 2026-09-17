@@ -45,6 +45,17 @@ Route::get('/sample/advance-kiosk/assets/{path}', function (string $path) use ($
     ]);
 })->where('path', '.*');
 
+Route::get('/sample/advance-kiosk/menu/{path}', function (string $path) use ($dist) {
+    $safe = str_replace(['..', '\\'], '', $path);
+    $full = $dist.DIRECTORY_SEPARATOR.'menu'.DIRECTORY_SEPARATOR.$safe;
+    abort_unless(is_file($full), 404);
+
+    return response()->file($full, [
+        'Content-Type' => 'image/svg+xml',
+        'Cache-Control' => 'public, max-age=86400',
+    ]);
+})->where('path', '.*');
+
 Route::get('/sample/advance-kiosk/{any?}', function () use ($dist) {
     $index = $dist.DIRECTORY_SEPARATOR.'index.html';
     abort_unless(is_file($index), 404, 'Kiosk UI not built yet. Run npm run build in client/.');
@@ -53,7 +64,7 @@ Route::get('/sample/advance-kiosk/{any?}', function () use ($dist) {
         'Content-Type' => 'text/html; charset=UTF-8',
         'Cache-Control' => 'no-cache',
     ]);
-})->where('any', '^(?!api(?:/|$)|assets(?:/|$)).*');
+})->where('any', '^(?!api(?:/|$)|assets(?:/|$)|menu(?:/|$)).*');
 
 Route::get('/', function () {
     return redirect('/sample/advance-kiosk/');

@@ -25,7 +25,7 @@ export default function KioskScreen() {
   const lines = menu
     .filter((m) => (cart[m.id] || 0) > 0)
     .map((m) => ({ item: m, qty: cart[m.id] }));
-  const total = lines.reduce((sum, row) => sum + row.item.price_cents * row.qty, 0);
+  const total = lines.reduce((sum, row) => sum + Number(row.item.price_cents) * row.qty, 0);
 
   const bump = (id: string, delta: number) => {
     setCart((prev) => {
@@ -45,6 +45,7 @@ export default function KioskScreen() {
       const order = await createOrder({
         customer_name: name.trim() || 'Guest',
         items: lines.map((row) => ({ id: row.item.id, qty: row.qty })),
+        source: 'kiosk',
       });
       setPlaced(order);
       setCart({});
@@ -92,7 +93,7 @@ export default function KioskScreen() {
               className="menu-tile rise"
               style={{ animationDelay: `${index * 0.04}s`, borderColor: item.color }}
             >
-              <div className="menu-swatch" style={{ background: item.color }} />
+              <img className="menu-photo" src={item.image} alt={item.name} loading="lazy" />
               <div className="menu-copy">
                 <h2>{item.name}</h2>
                 <p>{item.tag}</p>
@@ -113,7 +114,7 @@ export default function KioskScreen() {
 
         <aside className="screen-card kiosk-cart rise">
           <h2 className="brand-mark">Your tray</h2>
-          {lines.length === 0 ? <p className="muted">Add something delicious.</p> : null}
+          {lines.length === 0 && !placed ? <p className="muted">Add something delicious.</p> : null}
           <ul>
             {lines.map((row) => (
               <li key={row.item.id}>
@@ -124,10 +125,12 @@ export default function KioskScreen() {
               </li>
             ))}
           </ul>
-          <div className="kiosk-total">
-            <span>Total</span>
-            <strong>{pesos(total)}</strong>
-          </div>
+          {lines.length > 0 ? (
+            <div className="kiosk-total">
+              <span>Total</span>
+              <strong>{pesos(total)}</strong>
+            </div>
+          ) : null}
           {error ? <p className="err">{error}</p> : null}
           <button type="button" className="btn btn-danger" disabled={!lines.length || busy} onClick={() => void place()}>
             {busy ? 'Sending...' : 'Place order'}
@@ -136,7 +139,15 @@ export default function KioskScreen() {
             <div className="placed pulse">
               <p>Order placed</p>
               <strong className="brand-mark">{placed.code}</strong>
-              <span>Watch it on Cashier, Cook, and Status.</span>
+              <span className="placed-total">{pesos(placed.total_cents)}</span>
+              <ul className="placed-lines">
+                {placed.items.map((line) => (
+                  <li key={`${placed.id}-${line.id}`}>
+                    {line.qty} x {line.name}
+                  </li>
+                ))}
+              </ul>
+              <span>Open Cashier to take payment for this ticket.</span>
             </div>
           ) : null}
         </aside>

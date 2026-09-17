@@ -42,34 +42,22 @@ class OrderController extends Controller
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'string'],
             'items.*.qty' => ['required', 'integer', 'min:1', 'max:20'],
+            'source' => ['nullable', 'string', 'max:32'],
         ]);
 
-        $lines = [];
-        $total = 0;
-        foreach ($data['items'] as $row) {
-            $menu = MenuCatalog::find($row['id']);
-            if (!$menu) {
-                return response()->json(['ok' => false, 'error' => 'Unknown menu item: '.$row['id']], 422);
-            }
-            $qty = (int) $row['qty'];
-            $lineTotal = $menu['price_cents'] * $qty;
-            $total += $lineTotal;
-            $lines[] = [
-                'id' => $menu['id'],
-                'name' => $menu['name'],
-                'qty' => $qty,
-                'unit_cents' => $menu['price_cents'],
-                'line_cents' => $lineTotal,
-            ];
+        try {
+            $built = MenuCatalog::buildLines($data['items']);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['ok' => false, 'error' => $e->getMessage()], 422);
         }
 
         $order = Order::create([
             'code' => $this->nextCode(),
             'customer_name' => trim((string) ($data['customer_name'] ?? 'Guest')) ?: 'Guest',
             'status' => 'queued',
-            'items' => $lines,
-            'total_cents' => $total,
-            'source' => 'kiosk',
+            'items' => $built['lines'],
+            'total_cents' => $built['total_cents'],
+            'source' => $data['source'] ?? 'kiosk',
         ]);
 
         return response()->json([
@@ -81,37 +69,63 @@ class OrderController extends Controller
     public function update(Request $request, Order $order): JsonResponse
     {
         $data = $request->validate([
-            'status' => ['required', 'string', 'in:queued,paid,preparing,ready,completed'],
+            'status' => ['nullable', 'string', 'in:queued,paid,preparing,ready,completed'],
+            'customer_name' => ['nullable', 'string', 'max:80'],
+            'items' => ['nullable', 'array', 'min:1'],
+            'items.*.id' => ['required_with:items', 'string'],
+            'items.*.qty' => ['required_with:items', 'integer', 'min:1', 'max:20'],
         ]);
 
-        $next = $data['status'];
-        $order->status = $next;
+        if (isset($data['items'])) {
+            if (! in_array($order->status, ['queued', 'paid'], true)) {
+                return response()->json([
+                    'ok' => false,
+                    'error' => 'Only unpaid or paid tickets can still be edited.',
+                ], 422);
+            }
+            try {
+                $built = MenuCatalog::buildLines($data['items']);
+            } catch (\InvalidArgumentException $e) {
+                return response()->json(['ok' => false, 'error' => $e->getMessage()], 422);
+            }
+            $order->items = $built['lines'];
+            $order->total_cents = $built['total_cents'];
+        }
 
-        if ($next === 'paid' && !$order->paid_at) {
-            $order->paid_at = now();
+        if (array_key_exists('customer_name', $data) && $data['customer_name'] !== null) {
+            $order->customer_name = trim((string) $data['customer_name']) ?: 'Guest';
         }
-        if ($next === 'preparing' && !$order->preparing_at) {
-            $order->preparing_at = now();
-            if (!$order->paid_at) {
+
+        if (! empty($data['status'])) {
+            $next = $data['status'];
+            $order->status = $next;
+
+            if ($next === 'paid' && ! $order->paid_at) {
                 $order->paid_at = now();
             }
-        }
-        if ($next === 'ready' && !$order->ready_at) {
-            $order->ready_at = now();
-            if (!$order->preparing_at) {
+            if ($next === 'preparing' && ! $order->preparing_at) {
                 $order->preparing_at = now();
+                if (! $order->paid_at) {
+                    $order->paid_at = now();
+                }
             }
-            if (!$order->paid_at) {
-                $order->paid_at = now();
-            }
-        }
-        if ($next === 'completed') {
-            $order->completed_at = now();
-            if (!$order->ready_at) {
+            if ($next === 'ready' && ! $order->ready_at) {
                 $order->ready_at = now();
+                if (! $order->preparing_at) {
+                    $order->preparing_at = now();
+                }
+                if (! $order->paid_at) {
+                    $order->paid_at = now();
+                }
             }
-            if (!$order->paid_at) {
-                $order->paid_at = now();
+            if ($next === 'completed') {
+                $order->completed_at = now();
+                if (! $order->ready_at) {
+                    $order->ready_at = now();
+                }
+                if (! $order->paid_at) {
+                    $order->paid_at = now();
+                }
             }
         }
 
@@ -172,7 +186,7 @@ class OrderController extends Controller
             'customer_name' => $order->customer_name,
             'status' => $order->status,
             'items' => $order->items,
-            'total_cents' => $order->total_cents,
+            'total_cents' => (int) $order->total_cents,
             'source' => $order->source,
             'created_at' => optional($order->created_at)?->toIso8601String(),
             'paid_at' => optional($order->paid_at)?->toIso8601String(),

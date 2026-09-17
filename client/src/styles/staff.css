@@ -88,6 +88,87 @@
   background: linear-gradient(180deg, #e8f5e9, #a5d6a7);
 }
 
+.staff-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 4, 2, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 40;
+}
+
+.edit-panel {
+  width: min(920px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 18px;
+  background: #fff8e7;
+}
+
+.edit-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.edit-head h2 {
+  margin: 0;
+}
+
+.edit-head p {
+  margin: 4px 0 0;
+}
+
+.edit-name {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.edit-name input {
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.edit-menu {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.edit-tile {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.edit-tile img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.edit-tile p {
+  margin: 2px 0 0;
+}
+
 @media (max-width: 900px) {
   .staff-columns {
     grid-template-columns: 1fr;

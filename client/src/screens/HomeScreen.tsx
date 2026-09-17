@@ -12,7 +12,7 @@ const CARDS = [
   {
     to: 'cashier',
     title: 'Cashier',
-    copy: 'Take payment for unpaid tickets, then hand ready orders to guests.',
+    copy: 'Edit tickets, take payment, then hand ready orders to guests.',
     tone: 'cashier',
     primary: false,
   },
@@ -41,9 +41,14 @@ export default function HomeScreen() {
         <p className="home-sub">
           Start on the customer kiosk, then open cashier, cook, and status on other tabs.
         </p>
-        <Link to="kiosk" className="btn btn-primary home-hero-cta pulse">
-          Open self-service kiosk
-        </Link>
+        <div className="home-hero-actions">
+          <Link to="demo" className="btn btn-danger home-hero-cta pulse">
+            Run live demo
+          </Link>
+          <Link to="kiosk" className="btn btn-primary home-hero-cta">
+            Open self-service kiosk
+          </Link>
+        </div>
       </header>
       <div className="home-grid">
         {CARDS.map((card, index) => (
