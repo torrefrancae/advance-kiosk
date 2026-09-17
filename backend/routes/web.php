@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\OrderController;
+use App\Support\MenuArt;
+use App\Support\MenuCatalog;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
@@ -51,6 +53,16 @@ $register = function (string $base) use ($dist) {
             'Cache-Control' => 'public, max-age=3600',
         ]);
     })->where('path', '.*');
+
+    Route::get($menu.'/item/{id}.svg', function (string $id) {
+        $item = MenuCatalog::find($id);
+        abort_unless($item !== null, 404);
+
+        return response(MenuArt::render($item), 200, [
+            'Content-Type' => 'image/svg+xml; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    })->where('id', '[A-Za-z0-9\-]+');
 
     Route::get($menu.'/{path}', function (string $path) use ($dist) {
         $safe = str_replace(['..', '\\'], '', $path);

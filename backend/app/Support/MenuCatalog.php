@@ -8,7 +8,12 @@ class MenuCatalog
     {
         static $items = null;
         if ($items === null) {
-            $items = require __DIR__.'/menu_items.php';
+            $raw = require __DIR__.'/menu_items.php';
+            $items = array_map(static function (array $item): array {
+                $item['image'] = '/sample/advance-kiosk/menu/item/'.$item['id'].'.svg';
+
+                return $item;
+            }, $raw);
         }
 
         return $items;
