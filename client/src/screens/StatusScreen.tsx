@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useEmbedMode } from '@src/hooks/useEmbedMode';
 import { useLiveOrders } from '@src/hooks/useLiveOrders';
 import type { Order, OrderStatus } from '@src/lib/api';
 import '@src/styles/status.css';
@@ -31,17 +32,20 @@ function Column({ title, hint, orders }: { title: string; hint: string; orders: 
 }
 
 export default function StatusScreen() {
+  const embed = useEmbedMode();
   const { orders, connected } = useLiveOrders();
 
   return (
-    <div className="app-shell status-shell">
+    <div className={`app-shell status-shell${embed ? ' is-embed' : ''}`}>
       <header className="status-top rise">
         <div>
-          <Link to=".." className="kiosk-back">
-            All screens
-          </Link>
+          {embed ? null : (
+            <Link to=".." className="kiosk-back">
+              All screens
+            </Link>
+          )}
           <h1 className="brand-mark">Now Serving</h1>
-          <p>Lobby board updates as cashier and cook move each ticket.</p>
+          {embed ? null : <p>Lobby board updates as cashier and cook move each ticket.</p>}
         </div>
         <span className={`pill ${connected ? 'live' : 'idle'}`}>{connected ? 'Live' : 'Syncing'}</span>
       </header>

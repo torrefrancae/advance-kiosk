@@ -46,6 +46,22 @@ input {
   padding: 20px;
 }
 
+.app-shell.is-embed {
+  min-height: 100%;
+  padding: 10px;
+}
+
+.app-shell.is-embed .kiosk-top,
+.app-shell.is-embed .staff-top,
+.app-shell.is-embed .status-top {
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.app-shell.is-embed .brand-mark {
+  font-size: clamp(1.15rem, 2.8vw, 1.55rem);
+}
+
 .brand-mark {
   font-family: 'Fredoka', sans-serif;
   letter-spacing: 0.02em;

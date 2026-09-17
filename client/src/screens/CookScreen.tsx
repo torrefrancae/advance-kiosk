@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useEmbedMode } from '@src/hooks/useEmbedMode';
 import { useLiveOrders } from '@src/hooks/useLiveOrders';
 import { pesos, statusLabel, updateOrderStatus, type Order } from '@src/lib/api';
 import '@src/styles/staff.css';
 
 export default function CookScreen() {
+  const embed = useEmbedMode();
   const { orders, connected, error, setOrders } = useLiveOrders();
   const waiting = orders.filter((o) => o.status === 'paid');
   const cooking = orders.filter((o) => o.status === 'preparing');
@@ -14,14 +16,16 @@ export default function CookScreen() {
   };
 
   return (
-    <div className="app-shell staff-shell">
+    <div className={`app-shell staff-shell${embed ? ' is-embed' : ''}`}>
       <header className="staff-top rise">
         <div>
-          <Link to=".." className="kiosk-back">
-            All screens
-          </Link>
+          {embed ? null : (
+            <Link to=".." className="kiosk-back">
+              All screens
+            </Link>
+          )}
           <h1 className="brand-mark">Cook Station</h1>
-          <p>See paid tickets, start cooking, then mark each order ready.</p>
+          {embed ? null : <p>See paid tickets, start cooking, then mark each order ready.</p>}
         </div>
         <span className={`pill ${connected ? 'live' : 'idle'}`}>{connected ? 'Live sync on' : 'Reconnecting'}</span>
       </header>

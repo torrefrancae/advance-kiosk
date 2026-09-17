@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useEmbedMode } from '@src/hooks/useEmbedMode';
 import { createOrder, fetchMenu, pesos, type MenuItem, type Order } from '@src/lib/api';
 import '@src/styles/kiosk.css';
 
 type Cart = Record<string, number>;
 
 export default function KioskScreen() {
+  const embed = useEmbedMode();
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [cart, setCart] = useState<Cart>({});
   const [name, setName] = useState('');
@@ -57,14 +59,16 @@ export default function KioskScreen() {
   };
 
   return (
-    <div className="app-shell kiosk-shell">
+    <div className={`app-shell kiosk-shell${embed ? ' is-embed' : ''}`}>
       <header className="kiosk-top rise">
         <div>
-          <Link to=".." className="kiosk-back">
-            All screens
-          </Link>
+          {embed ? null : (
+            <Link to=".." className="kiosk-back">
+              All screens
+            </Link>
+          )}
           <h1 className="brand-mark">BeeJoy Kiosk</h1>
-          <p>Tap to order. Pay at Cashier, then watch Cook and the status board.</p>
+          {embed ? null : <p>Tap to order. Pay at Cashier, then watch Cook and the status board.</p>}
         </div>
         <label className="kiosk-name">
           Name on order

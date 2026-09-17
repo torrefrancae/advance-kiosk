@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useEmbedMode } from '@src/hooks/useEmbedMode';
 import { useLiveOrders } from '@src/hooks/useLiveOrders';
 import {
   fetchMenu,
@@ -23,6 +24,7 @@ function cartFromOrder(order: Order): Cart {
 }
 
 export default function CashierScreen() {
+  const embed = useEmbedMode();
   const { orders, connected, error, setOrders } = useLiveOrders();
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [editing, setEditing] = useState<Order | null>(null);
@@ -91,14 +93,16 @@ export default function CashierScreen() {
   };
 
   return (
-    <div className="app-shell staff-shell">
+    <div className={`app-shell staff-shell${embed ? ' is-embed' : ''}`}>
       <header className="staff-top rise">
         <div>
-          <Link to=".." className="kiosk-back">
-            All screens
-          </Link>
+          {embed ? null : (
+            <Link to=".." className="kiosk-back">
+              All screens
+            </Link>
+          )}
           <h1 className="brand-mark">Cashier</h1>
-          <p>Edit unpaid tickets like the kiosk, take payment, then hand ready orders to guests.</p>
+          {embed ? null : <p>Edit unpaid tickets like the kiosk, take payment, then hand ready orders to guests.</p>}
         </div>
         <span className={`pill ${connected ? 'live' : 'idle'}`}>{connected ? 'Live sync on' : 'Reconnecting'}</span>
       </header>
