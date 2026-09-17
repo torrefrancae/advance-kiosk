@@ -44,13 +44,17 @@
 
 .kiosk-cats {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin-bottom: 16px;
-  max-height: 96px;
   overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 4px;
+  overflow-y: visible;
+  padding-bottom: 6px;
+}
+
+.kiosk-cats .btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .kiosk-layout {
@@ -65,7 +69,7 @@
   gap: 12px;
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .kiosk-menu {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -73,8 +77,9 @@
 
 .menu-tile {
   display: grid;
-  grid-template-columns: 96px 1fr auto;
-  gap: 12px;
+  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 10px 12px;
   align-items: center;
   background: rgba(255, 248, 231, 0.94);
   border-radius: 22px;
@@ -84,16 +89,21 @@
 }
 
 .menu-photo {
-  width: 96px;
-  height: 96px;
+  width: 88px;
+  height: 88px;
   object-fit: cover;
   border-radius: 18px;
   box-shadow: 0 8px 18px rgba(80, 20, 10, 0.22);
 }
 
+.menu-copy {
+  min-width: 0;
+}
+
 .menu-copy h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  line-height: 1.2;
 }
 
 .menu-copy p {
@@ -102,8 +112,10 @@
 }
 
 .menu-actions {
+  grid-column: 1 / -1;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
   font-weight: 800;
 }
@@ -187,12 +199,8 @@
     display: grid;
   }
 
-  .menu-tile {
-    grid-template-columns: 84px 1fr;
-  }
-
-  .menu-actions {
-    grid-column: 1 / -1;
-    justify-content: end;
+  .menu-photo {
+    width: 72px;
+    height: 72px;
   }
 }
