@@ -1,11 +1,6 @@
-import { useEffect } from 'react';
-import { createOrder, type Order } from '@src/lib/api';
-
-const DEMO_ITEMS = [
-  { id: 'chicken-joy-meal', qty: 1 },
-  { id: 'peach-mango-pie', qty: 1 },
-  { id: 'float', qty: 1 },
-] as const;
+import { useEffect, useRef } from 'react';
+import { DEMO_ITEMS, openDemoChannel, type DemoChannelMessage } from '@src/lib/demoChannel';
+import type { Order } from '@src/lib/api';
 
 function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -23,55 +18,65 @@ interface Options {
 }
 
 export function useDemoKioskDrive({ enabled, setName, setCart, setBusy, setPlaced, setError }: Options) {
+  const runRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!enabled) return;
 
+    const channel = openDemoChannel();
     let cancelled = false;
 
-    const onMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== 'beejoy-demo-place') return;
+    const onMessage = (event: MessageEvent<DemoChannelMessage>) => {
+      const data = event.data;
+      if (!data || typeof data !== 'object' || !('type' in data)) return;
 
-      void (async () => {
-        setError(null);
-        setPlaced(null);
-        setName('Demo Guest');
-        setCart({});
-        setBusy(true);
-
-        try {
-          for (const item of DEMO_ITEMS) {
-            if (cancelled) return;
-            await wait(380);
-            setCart((prev) => ({ ...prev, [item.id]: item.qty }));
-          }
-          if (cancelled) return;
-          await wait(520);
-
-          const order = await createOrder({
-            customer_name: 'Demo Guest',
-            items: DEMO_ITEMS.map((row) => ({ id: row.id, qty: row.qty })),
-            source: 'demo',
-          });
-          if (cancelled) return;
-
-          setCart({});
-          setPlaced(order);
-          window.parent.postMessage({ type: 'beejoy-demo-order', order }, window.location.origin);
-        } catch (err) {
-          const message = err instanceof Error ? err.message : 'Could not place order';
-          setError(message);
-          window.parent.postMessage({ type: 'beejoy-demo-order', error: message }, window.location.origin);
-        } finally {
-          if (!cancelled) setBusy(false);
+      if (data.type === 'beejoy-demo-begin') {
+        if (runRef.current === data.runId) {
+          channel.postMessage({ type: 'beejoy-demo-ack', runId: data.runId } satisfies DemoChannelMessage);
+          return;
         }
-      })();
+
+        runRef.current = data.runId;
+        channel.postMessage({ type: 'beejoy-demo-ack', runId: data.runId } satisfies DemoChannelMessage);
+
+        void (async () => {
+          setError(null);
+          setPlaced(null);
+          setName('Demo Guest');
+          setCart({});
+          setBusy(true);
+
+          try {
+            for (const item of DEMO_ITEMS) {
+              if (cancelled || runRef.current !== data.runId) return;
+              await wait(380);
+              setCart((prev) => ({ ...prev, [item.id]: item.qty }));
+            }
+          } finally {
+            if (!cancelled && runRef.current === data.runId) setBusy(false);
+          }
+        })();
+        return;
+      }
+
+      if (data.type === 'beejoy-demo-placed' && data.runId === runRef.current) {
+        setCart({});
+        setBusy(false);
+        setPlaced(data.order as Order);
+        setError(null);
+      }
+
+      if (data.type === 'beejoy-demo-error' && data.runId === runRef.current) {
+        setBusy(false);
+        setError(data.error);
+      }
     };
 
-    window.addEventListener('message', onMessage);
+    channel.addEventListener('message', onMessage);
     return () => {
       cancelled = true;
-      window.removeEventListener('message', onMessage);
+      channel.removeEventListener('message', onMessage);
+      channel.close();
     };
   }, [enabled, setBusy, setCart, setError, setName, setPlaced]);
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { pesos, updateOrderStatus, type Order } from '@src/lib/api';
+import { createOrder, pesos, updateOrderStatus, type Order } from '@src/lib/api';
+import { DEMO_ITEMS, openDemoChannel, type DemoChannelMessage } from '@src/lib/demoChannel';
 import '@src/styles/demo.css';
 
 const BASE = '/sample/advance-kiosk';
@@ -24,33 +25,38 @@ function wait(ms: number) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-function requestKioskOrder(frame: HTMLIFrameElement | null) {
-  return new Promise<Order>((resolve, reject) => {
-    const target = frame?.contentWindow;
-    if (!target) {
-      reject(new Error('Kiosk panel is not ready yet'));
-      return;
-    }
+function waitForKioskAck(runId: string, timeoutMs = 12000) {
+  return new Promise<void>((resolve, reject) => {
+    const channel = openDemoChannel();
+    const started = Date.now();
 
-    const timeout = window.setTimeout(() => {
-      window.removeEventListener('message', onMessage);
-      reject(new Error('Kiosk demo timed out'));
-    }, 20000);
-
-    const onMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== 'beejoy-demo-order') return;
-      window.clearTimeout(timeout);
-      window.removeEventListener('message', onMessage);
-      if (typeof event.data.error === 'string') {
-        reject(new Error(event.data.error));
-        return;
-      }
-      resolve(event.data.order as Order);
+    const finish = (err?: Error) => {
+      window.clearInterval(pulse);
+      window.clearTimeout(timer);
+      channel.removeEventListener('message', onMessage);
+      channel.close();
+      if (err) reject(err);
+      else resolve();
     };
 
-    window.addEventListener('message', onMessage);
-    target.postMessage({ type: 'beejoy-demo-place' }, window.location.origin);
+    const onMessage = (event: MessageEvent<DemoChannelMessage>) => {
+      const data = event.data;
+      if (data?.type === 'beejoy-demo-ack' && data.runId === runId) finish();
+    };
+
+    channel.addEventListener('message', onMessage);
+
+    const pulse = window.setInterval(() => {
+      channel.postMessage({ type: 'beejoy-demo-begin', runId } satisfies DemoChannelMessage);
+      if (Date.now() - started > timeoutMs) {
+        finish(new Error('Kiosk panel did not respond. Refresh and try again.'));
+      }
+    }, 350);
+
+    channel.postMessage({ type: 'beejoy-demo-begin', runId } satisfies DemoChannelMessage);
+    const timer = window.setTimeout(() => {
+      finish(new Error('Kiosk panel did not respond. Refresh and try again.'));
+    }, timeoutMs);
   });
 }
 
@@ -61,11 +67,14 @@ export default function DemoScreen() {
   const [message, setMessage] = useState('Press Start demo to run the full flow across all four screens.');
   const [error, setError] = useState<string | null>(null);
   const stopRef = useRef(false);
-  const kioskRef = useRef<HTMLIFrameElement | null>(null);
+  const channelRef = useRef<BroadcastChannel | null>(null);
 
   useEffect(() => {
+    channelRef.current = openDemoChannel();
     return () => {
       stopRef.current = true;
+      channelRef.current?.close();
+      channelRef.current = null;
     };
   }, []);
 
@@ -78,12 +87,32 @@ export default function DemoScreen() {
     setStep(0);
     setMessage(STEPS[0]);
 
+    const runId = `run-${Date.now()}`;
+    const channel = channelRef.current ?? openDemoChannel();
+
     try {
-      const created = await requestKioskOrder(kioskRef.current);
+      await waitForKioskAck(runId);
       if (stopRef.current) return;
+
+      await wait(1400);
+      if (stopRef.current) return;
+
+      const created = await createOrder({
+        customer_name: 'Demo Guest',
+        items: DEMO_ITEMS.map((row) => ({ id: row.id, qty: row.qty })),
+        source: 'demo',
+      });
+      if (stopRef.current) return;
+
+      channel.postMessage({
+        type: 'beejoy-demo-placed',
+        runId,
+        order: created,
+      } satisfies DemoChannelMessage);
+
       setOrder(created);
       setMessage(`${STEPS[0]} - ${created.code} (${pesos(created.total_cents)})`);
-      await wait(1800);
+      await wait(1600);
 
       setStep(1);
       setMessage(STEPS[1]);
@@ -109,7 +138,9 @@ export default function DemoScreen() {
       setOrder(current);
       setMessage(`Done. ${current.code} completed. Watch the four panels update live.`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Demo failed');
+      const text = err instanceof Error ? err.message : 'Demo failed';
+      setError(text);
+      channel.postMessage({ type: 'beejoy-demo-error', runId, error: text } satisfies DemoChannelMessage);
     } finally {
       setRunning(false);
     }
@@ -145,12 +176,7 @@ export default function DemoScreen() {
                 <span>{frame.title}</span>
                 {active ? <span className="demo-live-pill">Active</span> : null}
               </header>
-              <iframe
-                ref={frame.key === 'kiosk' ? kioskRef : undefined}
-                title={frame.title}
-                src={frame.href}
-                loading="eager"
-              />
+              <iframe title={frame.title} src={frame.href} loading="eager" />
             </section>
           );
         })}

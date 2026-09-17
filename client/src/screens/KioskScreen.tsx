@@ -18,7 +18,7 @@ export default function KioskScreen() {
   const [category, setCategory] = useState('All');
 
   useDemoKioskDrive({
-    enabled: embed,
+    enabled: true,
     setName,
     setCart,
     setBusy,
