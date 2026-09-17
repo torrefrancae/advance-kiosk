@@ -127,9 +127,8 @@ export default function KioskScreen() {
                 </span>
                 <span className="kiosk-rail-copy">
                   <span className="kiosk-rail-label">{copy.title || cat.name}</span>
-                  <span className="kiosk-rail-blurb">{copy.blurb}</span>
                 </span>
-                {active ? <span className="kiosk-rail-live">Selected</span> : <span className="kiosk-rail-count">{cat.count} items</span>}
+                {active ? <span className="kiosk-rail-live">Selected</span> : <span className="kiosk-rail-count">{cat.count}</span>}
               </button>
             );
           })}

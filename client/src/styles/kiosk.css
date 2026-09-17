@@ -120,21 +120,12 @@
 .kiosk-rail-label {
   display: block;
   font-family: 'Fredoka', sans-serif;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: 0.01em;
   color: #2b120c;
   word-break: break-word;
-}
-
-.kiosk-rail-blurb {
-  display: block;
-  font-family: 'Nunito', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1.25;
-  color: rgba(43, 18, 12, 0.72);
 }
 
 .kiosk-rail-count {
@@ -195,11 +186,7 @@
 
 .kiosk-rail-btn.is-active .kiosk-rail-label {
   color: #7a1a10;
-  font-size: 1.12rem;
-}
-
-.kiosk-rail-btn.is-active .kiosk-rail-blurb {
-  color: rgba(122, 26, 16, 0.88);
+  font-size: 1.14rem;
 }
 
 .kiosk-rail-btn.is-active::before {
