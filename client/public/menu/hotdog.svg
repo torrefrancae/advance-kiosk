@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6D1F14"/><stop offset="1" stop-color="#C62828"/></linearGradient></defs>
+  <rect width="640" height="480" rx="48" fill="url(#g)"/>
+  <ellipse cx="320" cy="400" rx="180" ry="24" fill="#000" opacity=".16"/>
+  
+  <rect x="170" y="220" width="300" height="70" rx="35" fill="#F4A460"/>
+  <rect x="190" y="235" width="260" height="40" rx="20" fill="#E23D28"/>
+  <path d="M220 250h40M280 250h40M340 250h40M400 250h40" stroke="#FFD54F" stroke-width="6"/>
+
+  <text x="36" y="64" fill="#FFD54F" font-family="Arial Black,sans-serif" font-size="36">Hotdog</text>
+</svg>

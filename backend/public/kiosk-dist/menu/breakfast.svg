@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7A1A10"/><stop offset="1" stop-color="#E23D28"/></linearGradient></defs>
+  <rect width="640" height="480" rx="48" fill="url(#g)"/>
+  <ellipse cx="320" cy="400" rx="180" ry="24" fill="#000" opacity=".16"/>
+  
+  <ellipse cx="250" cy="270" rx="120" ry="70" fill="#FFF3E0"/>
+  <ellipse cx="250" cy="270" rx="95" ry="50" fill="#FFE0B2"/>
+  <ellipse cx="430" cy="250" rx="55" ry="55" fill="#FFECB3" stroke="#F9A825" stroke-width="8"/>
+  <circle cx="430" cy="250" r="18" fill="#FF8F00"/>
+
+  <text x="36" y="64" fill="#FFD54F" font-family="Arial Black,sans-serif" font-size="36">Breakfast</text>
+</svg>
