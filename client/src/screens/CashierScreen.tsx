@@ -17,8 +17,12 @@ type Cart = Record<string, number>;
 
 function cartFromOrder(order: Order): Cart {
   const next: Cart = {};
-  order.items.forEach((line) => {
-    next[line.id] = line.qty;
+  const lines = Array.isArray(order.items) ? order.items : [];
+  lines.forEach((line) => {
+    const id = String(line?.id || '');
+    const qty = Number(line?.qty);
+    if (!id || !Number.isFinite(qty) || qty <= 0) return;
+    next[id] = qty;
   });
   return next;
 }
@@ -48,6 +52,11 @@ export default function CashierScreen() {
     [menu, draftCart]
   );
   const draftTotal = draftLines.reduce((sum, row) => sum + row.item.price_cents * row.qty, 0);
+  const ticketMenu = useMemo(() => {
+    const selected = menu.filter((m) => (draftCart[m.id] || 0) > 0);
+    const rest = menu.filter((m) => (draftCart[m.id] || 0) <= 0);
+    return [...selected, ...rest];
+  }, [menu, draftCart]);
 
   const act = async (order: Order, status: 'paid' | 'completed') => {
     const updated = await updateOrderStatus(order.id, status);
@@ -190,25 +199,46 @@ export default function CashierScreen() {
               Name on order
               <input value={draftName} onChange={(e) => setDraftName(e.target.value)} />
             </label>
+            {draftLines.length > 0 ? (
+              <div className="edit-ticket-summary">
+                <h3>On this ticket</h3>
+                <ul>
+                  {draftLines.map((row) => (
+                    <li key={`ticket-${row.item.id}`}>
+                      <span>
+                        {row.qty} x {row.item.name}
+                      </span>
+                      <strong>{pesos(row.item.price_cents * row.qty)}</strong>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="edit-empty">No items yet. Add from the menu below.</p>
+            )}
+            <h3 className="edit-menu-title">Full menu</h3>
             <div className="edit-menu">
-              {menu.map((item) => (
-                <article key={item.id} className="edit-tile">
-                  {item.image ? <img src={item.image} alt="" /> : null}
-                  <div>
-                    <strong>{item.name}</strong>
-                    <p>{pesos(item.price_cents)}</p>
-                  </div>
-                  <div className="menu-actions">
-                    <button type="button" className="btn btn-ghost" onClick={() => bump(item.id, -1)}>
-                      -
-                    </button>
-                    <span>{draftCart[item.id] || 0}</span>
-                    <button type="button" className="btn btn-primary" onClick={() => bump(item.id, 1)}>
-                      +
-                    </button>
-                  </div>
-                </article>
-              ))}
+              {ticketMenu.map((item) => {
+                const qty = draftCart[item.id] || 0;
+                return (
+                  <article key={item.id} className={`edit-tile${qty > 0 ? ' is-picked' : ''}`}>
+                    {item.image ? <img src={item.image} alt="" /> : null}
+                    <div>
+                      <strong>{item.name}</strong>
+                      <p>{pesos(item.price_cents)}</p>
+                    </div>
+                    <div className="edit-actions">
+                      <button type="button" className="btn btn-ghost" onClick={() => bump(item.id, -1)}>
+                        -
+                      </button>
+                      <span className="edit-qty">{qty}</span>
+                      <button type="button" className="btn btn-primary" onClick={() => bump(item.id, 1)}>
+                        +
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
             <div className="kiosk-total">
               <span>Total</span>
